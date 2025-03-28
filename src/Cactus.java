@@ -2,8 +2,8 @@ import java.awt.*;
 
 public class Cactus {
     private Image image;
-    private int x, y;
-    private final int speed = 3;
+    private int x, y; // Cactus position
+    private final int speed = 5; // Cactus speed
 
     public Cactus(Image image, int startX, int startY) {
         this.image = image;
