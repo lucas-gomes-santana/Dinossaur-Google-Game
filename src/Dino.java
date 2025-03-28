@@ -1,50 +1,48 @@
 import javax.swing.*;
 import java.awt.*;
-import javax.imageio.ImageIO;
-import java.io.IOException;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-public class Dino extends JPanel {
-    int screenWidth, screenHeight;
-    Image backgroundImg, dinoImg, cactusImg;
+public class Dino extends JPanel implements ActionListener {
+    private Image dinoImg;
+    private Background background;
+    private Cactus cactus;
+    private int screenWidth, screenHeight;
 
-    Dino(int screenWidth, int screenHeight) {
+    // FPS Settings
+    private Timer timer;
+    private final int fps = 60;
+    private final int delay = 1000 / fps;
+
+    public Dino(int screenWidth, int screenHeight, Image dinoImg, Image backgroundImg, Image cactusImg) {
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
+        this.dinoImg = dinoImg;
+
         setPreferredSize(new Dimension(screenWidth, screenHeight));
-        setOpaque(false); // Permite fundo transparente
 
-        try {
-            // Carrega imagens (caminho relativo, sem /)
-            backgroundImg = ImageIO.read(getClass().getResource("background.png"));
-            dinoImg = ImageIO.read(getClass().getResource("dino.png"));
-            cactusImg = ImageIO.read(getClass().getResource("cactus.png"));
+        background = new Background(backgroundImg, screenHeight - 75);
+        cactus = new Cactus(cactusImg, 700, screenHeight - 100);
 
-            System.out.println("Background carregado? " + (backgroundImg != null));
-        } catch (IOException | IllegalArgumentException e) {
-            System.err.println("ERRO: Imagem não encontrada!");
-            e.printStackTrace();
-        }
+        timer = new Timer(delay, this);
+        timer.start();
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+        background.draw(g, screenWidth, screenHeight); // Desenha fundo
+        cactus.draw(g); // Desenha cacto
+        g.drawImage(dinoImg, 50, screenHeight - 100, null); // Desenha dinossauro
+    }
 
-        // Desenha o background (redimensiona para preencher a tela)
-        if (backgroundImg != null) {
-            g.drawImage(backgroundImg, 0, 0, getWidth(), getHeight(), this);
-        } else {
-            // Debug: fundo vermelho se a imagem não carregar
-            g.setColor(Color.RED);
-            g.fillRect(0, 0, getWidth(), getHeight());
-        }
+    @Override
+    public void actionPerformed(ActionEvent actionEvent) {
+        updateGame();
+        repaint();
+    }
 
-        // Desenha o dino e o cacto (exemplo)
-        if (dinoImg != null) {
-            g.drawImage(dinoImg, 50, screenHeight - 100, this);
-        }
-        if (cactusImg != null) {
-            g.drawImage(cactusImg, 300, screenHeight - 80, this);
-        }
+    private void updateGame(){
+        cactus.moveLeft();
     }
 }
