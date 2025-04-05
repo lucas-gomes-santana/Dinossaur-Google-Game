@@ -29,6 +29,7 @@ The primary goal of this project was to enhance my knowledge of Java and its cap
 ****
 
 ## Contributions
+
 Feel free to fork this repository and submit pull requests if you'd like to improve or expand the game.
 
 ****
