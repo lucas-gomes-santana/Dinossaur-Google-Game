@@ -35,7 +35,7 @@ Feel free to fork this repository and submit pull requests if you'd like to impr
 
 ## License
 
-This repository is licensed under the Unlicense license. In other words, this project is in the public domain and can be used without any restrictions.
+This repository is licensed under [Unlicense](https://github.com/lucas-gomes-santana/Dinossaur-Google-Game/blob/main/LICENSE).In other words, this project is in the public domain and can be used without any restrictions.
 
 <br>
 
