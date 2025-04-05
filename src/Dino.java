@@ -24,6 +24,9 @@ public class Dino extends JPanel implements ActionListener, KeyListener {
     private final double gravity = 0.5;
     private final double jumpStrength = -12;
 
+    private boolean isMoving = true;
+    private boolean gameOver = false;
+
 
     public Dino(int screenWidth, int screenHeight, Image dinoImg, Image backgroundImg, Image cactusImg) {
         this.screenWidth = screenWidth;
@@ -44,12 +47,26 @@ public class Dino extends JPanel implements ActionListener, KeyListener {
         timer.start();
     }
 
+    public Rectangle getHitBox() {
+        return new Rectangle(dinoX,dinoY,60,60);
+    }
+
+    public void stop() {
+        isMoving = false;
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         background.draw(g, screenWidth, screenHeight);
         cactus.draw(g);
         g.drawImage(dinoImg, dinoX,dinoY, null);
+
+        if(gameOver) {
+            g.setColor(Color.BLACK);
+            g.setFont(new Font("Arial",Font.BOLD, 30));
+            g.drawString("GAME OVER", screenWidth/2 - 100, screenHeight/2);
+        }
     }
 
     @Override
@@ -59,7 +76,14 @@ public class Dino extends JPanel implements ActionListener, KeyListener {
     }
 
     private void updateGame() {
-        cactus.moveLeft();
+        if(!gameOver) {
+            cactus.moveLeft();
+
+            if(this.getHitBox().intersects(cactus.getHitBox())) {
+                gameOver = true;
+                cactus.stop();
+            }
+        }
 
         if (isJumping) {
             dinoY += velocityY;
@@ -73,15 +97,12 @@ public class Dino extends JPanel implements ActionListener, KeyListener {
         }
     }
 
-
     @Override
-    public void keyTyped(KeyEvent keyEvent) {
-
-    }
+    public void keyTyped(KeyEvent keyEvent) { }
 
     @Override
     public void keyPressed(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_UP) {
+        if (!gameOver && e.getKeyCode() == KeyEvent.VK_UP) {
             if (!isJumping) {
                 isJumping = true;
                 velocityY = jumpStrength;
@@ -90,8 +111,6 @@ public class Dino extends JPanel implements ActionListener, KeyListener {
     }
 
     @Override
-    public void keyReleased(KeyEvent keyEvent) {
-
-    }
+    public void keyReleased(KeyEvent keyEvent) { }
 
 }
