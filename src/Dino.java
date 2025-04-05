@@ -7,6 +7,7 @@ public class Dino extends JPanel implements ActionListener, KeyListener {
     private Background background;
     private Cactus cactus;
     private int screenWidth, screenHeight;
+    private int score = 0;
 
     // FPS Settings
     private Timer timer;
@@ -26,6 +27,7 @@ public class Dino extends JPanel implements ActionListener, KeyListener {
 
     private boolean isMoving = true;
     private boolean gameOver = false;
+    private boolean alreadyScored = false;
 
 
     public Dino(int screenWidth, int screenHeight, Image dinoImg, Image backgroundImg, Image cactusImg) {
@@ -62,10 +64,17 @@ public class Dino extends JPanel implements ActionListener, KeyListener {
         cactus.draw(g);
         g.drawImage(dinoImg, dinoX,dinoY, null);
 
+        g.setColor(Color.BLACK);
+        g.setFont(new Font("Arial",Font.BOLD,20));
+        g.drawString("Score: " + score,20,30);
+
         if(gameOver) {
             g.setColor(Color.BLACK);
             g.setFont(new Font("Arial",Font.BOLD, 30));
             g.drawString("GAME OVER", screenWidth/2 - 100, screenHeight/2);
+
+            g.setFont(new Font("Arial",Font.BOLD,20));
+            g.drawString("Final Score: " + score, screenWidth/2 - 100, screenHeight/2 + 40);
         }
     }
 
@@ -82,6 +91,15 @@ public class Dino extends JPanel implements ActionListener, KeyListener {
             if(this.getHitBox().intersects(cactus.getHitBox())) {
                 gameOver = true;
                 cactus.stop();
+            }
+
+            if(cactus.getCactusX() < dinoX && !alreadyScored) {
+                score++;
+                alreadyScored = true;
+            }
+
+            if(cactus.getCactusX() < -50) {
+                alreadyScored = false;
             }
         }
 
@@ -108,9 +126,22 @@ public class Dino extends JPanel implements ActionListener, KeyListener {
                 velocityY = jumpStrength;
             }
         }
+
+        else if(gameOver && e.getKeyCode() == KeyEvent.VK_SPACE) {
+            resetGame();
+        }
     }
 
     @Override
     public void keyReleased(KeyEvent keyEvent) { }
 
+    private void resetGame() {
+       gameOver = false;
+       score = 0;
+       alreadyScored = false;
+       dinoY = groundY;
+       isJumping = false;
+       velocityY = 0;
+       cactus.reset();
+    }
 }

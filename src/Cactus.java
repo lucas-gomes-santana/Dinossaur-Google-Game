@@ -34,4 +34,13 @@ public class Cactus {
             }
         }
     }
+
+    public int getCactusX() {
+        return cactusX;
+    }
+
+    public void reset() {
+        cactusX = 700;
+        isMoving = true;
+    }
 }
