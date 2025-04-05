@@ -2,10 +2,13 @@ import java.awt.*;
 
 public class Cactus {
     private Image image;
-    private int cactusX, cactusY; // Cactus position
-    private final int speed = 5; // Cactus speed
+    private int cactusX, cactusY;
+    private double speed;
 
     private boolean isMoving = true;
+    private boolean isOffScreen = false;
+
+    private long lastSpawnTime;
 
     public Cactus(Image image, int startX, int startY) {
         this.image = image;
@@ -29,18 +32,27 @@ public class Cactus {
         if(isMoving) {
             cactusX -= speed;
 
-            if(cactusX < -50){ // If the cactus exit of screen, it returns to right side
-                cactusX = 800;
+            if(cactusX < -50) {
+                long currentTime = System.currentTimeMillis();
+                if(currentTime - lastSpawnTime > 500) {
+                    isOffScreen = true;
+                    cactusX = 800;
+                    lastSpawnTime = currentTime;
+                }
+
+            } else {
+                isOffScreen = false;
             }
         }
     }
 
-    public int getCactusX() {
-        return cactusX;
-    }
+    public int getCactusX() { return cactusX; }
+    public boolean isOffScreen() { return isOffScreen; }
+    public void setSpeed(double speed) { this.speed = speed; }
 
     public void reset() {
-        cactusX = 700;
+        cactusX = 800;
         isMoving = true;
+        isOffScreen = false;
     }
 }

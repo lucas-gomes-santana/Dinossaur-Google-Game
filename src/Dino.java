@@ -29,6 +29,12 @@ public class Dino extends JPanel implements ActionListener, KeyListener {
     private boolean gameOver = false;
     private boolean alreadyScored = false;
 
+    private double baseSpeed = 2.5;
+    private double currentSpeed = baseSpeed;
+    private long gameStartTime;
+    private final double speedIncreaseInterval = 6500;
+    private final double speedIncreaseAmount = 0.18;
+
 
     public Dino(int screenWidth, int screenHeight, Image dinoImg, Image backgroundImg, Image cactusImg) {
         this.screenWidth = screenWidth;
@@ -47,6 +53,8 @@ public class Dino extends JPanel implements ActionListener, KeyListener {
 
         timer = new Timer(delay, this);
         timer.start();
+
+        this.gameStartTime = System.currentTimeMillis();
     }
 
     public Rectangle getHitBox() {
@@ -74,7 +82,11 @@ public class Dino extends JPanel implements ActionListener, KeyListener {
             g.drawString("GAME OVER", screenWidth/2 - 100, screenHeight/2);
 
             g.setFont(new Font("Arial",Font.BOLD,20));
-            g.drawString("Final Score: " + score, screenWidth/2 - 100, screenHeight/2 + 40);
+            g.drawString("Final Score: " + score, screenWidth/2 - 100, screenHeight/2 + 30);
+
+            g.setFont(new Font("Arial",Font.BOLD,15));
+            g.drawString("Press E to restart",screenWidth/2 - 100,screenHeight/2 + 60);
+
         }
     }
 
@@ -86,6 +98,7 @@ public class Dino extends JPanel implements ActionListener, KeyListener {
 
     private void updateGame() {
         if(!gameOver) {
+            updateSpeed();
             cactus.moveLeft();
 
             if(this.getHitBox().intersects(cactus.getHitBox())) {
@@ -93,12 +106,12 @@ public class Dino extends JPanel implements ActionListener, KeyListener {
                 cactus.stop();
             }
 
-            if(cactus.getCactusX() < dinoX && !alreadyScored) {
+            if(cactus.getCactusX() + cactus.getHitBox().width < dinoX && !alreadyScored) {
                 score++;
                 alreadyScored = true;
             }
 
-            if(cactus.getCactusX() < -50) {
+            if(cactus.isOffScreen()) {
                 alreadyScored = false;
             }
         }
@@ -115,6 +128,18 @@ public class Dino extends JPanel implements ActionListener, KeyListener {
         }
     }
 
+    private void updateSpeed() {
+        long currentTime = System.currentTimeMillis();
+        long elapsedTime = currentTime - gameStartTime;
+
+        currentSpeed = baseSpeed + (elapsedTime * 0.0005);
+
+        if(currentSpeed > 15.0) {
+            currentSpeed = 15.0;
+        }
+        cactus.setSpeed(currentSpeed);
+    }
+
     @Override
     public void keyTyped(KeyEvent keyEvent) { }
 
@@ -127,7 +152,7 @@ public class Dino extends JPanel implements ActionListener, KeyListener {
             }
         }
 
-        else if(gameOver && e.getKeyCode() == KeyEvent.VK_SPACE) {
+        else if(gameOver && e.getKeyCode() == KeyEvent.VK_E) {
             resetGame();
         }
     }
@@ -143,5 +168,8 @@ public class Dino extends JPanel implements ActionListener, KeyListener {
        isJumping = false;
        velocityY = 0;
        cactus.reset();
+       currentSpeed = baseSpeed;
+       gameStartTime = System.currentTimeMillis();
+       cactus.setSpeed(baseSpeed);
     }
 }
